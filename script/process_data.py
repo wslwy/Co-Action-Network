@@ -8,7 +8,8 @@ def process_meta(file):
     for line in fi:
         obj = eval(line)
         cat = obj["categories"][0][-1]
-        print>>fo, obj["asin"] + "\t" + cat
+        # print>>fo, obj["asin"] + "\t" + cat
+        print(obj["asin"] + "\t" + cat, file=fo)
 
 def process_reviews(file):
     fi = open(file, "r")
@@ -20,7 +21,9 @@ def process_reviews(file):
         itemID = obj["asin"]
         rating = obj["overall"]
         time = obj["unixReviewTime"]
-        print>>fo, userID + "\t" + itemID + "\t" + str(rating) + "\t" + str(time)
+        # print>>fo, userID + "\t" + itemID + "\t" + str(rating) + "\t" + str(time)
+        print(userID + "\t" + itemID + "\t" + str(rating) + "\t" + str(time) , file=fo)
+        
 
 def manual_join():
     f_rev = open("reviews-info", "r")
@@ -44,6 +47,7 @@ def manual_join():
             arr = line.strip().split("\t")
     fo = open("jointed-new", "w")
     for key in user_map:
+        # 每个user记录list根据时间戳排序
         sorted_user_bh = sorted(user_map[key], key=lambda x:x[1])
         for line, t in sorted_user_bh:
             items = line.split("\t")
@@ -55,19 +59,23 @@ def manual_join():
                 if asin_neg == asin:
                     continue 
                 items[1] = asin_neg
-                print>>fo, "0" + "\t" + "\t".join(items) + "\t" + meta_map[asin_neg]
+                # print>>fo, "0" + "\t" + "\t".join(items) + "\t" + meta_map[asin_neg]
+                print("0" + "\t" + "\t".join(items) + "\t" + meta_map[asin_neg], file=fo)
                 j += 1
                 if j == 1:             #negative sampling frequency
                     break
             if asin in meta_map:
-                print>>fo, "1" + "\t" + line + "\t" + meta_map[asin]
+                # print>>fo, "1" + "\t" + line + "\t" + meta_map[asin]
+                print("1" + "\t" + line + "\t" + meta_map[asin] , file=fo)
             else:
-                print>>fo, "1" + "\t" + line + "\t" + "default_cat"
+                # print>>fo, "1" + "\t" + line + "\t" + "default_cat"
+                print("1" + "\t" + line + "\t" + "default_cat" , file=fo)
 
 
 def split_test():
     fi = open("jointed-new", "r")
     fo = open("jointed-new-split-info", "w")
+    # 统计每个用户样例数
     user_count = {}
     for line in fi:
         line = line.strip()
@@ -77,25 +85,30 @@ def split_test():
         user_count[user] += 1
     fi.seek(0)
     i = 0
-    last_user = "A26ZDKC53OP6JD"
+    last_user = "A26ZDKC53OP6JD"   # last_user，分user处理
     for line in fi:
         line = line.strip()
         user = line.split("\t")[1]
         if user == last_user:
             if i < user_count[user] - 2:  # 1 + negative samples
-                print>> fo, "20180118" + "\t" + line
+                # print>> fo, "20180118" + "\t" + line
+                print("20180118" + "\t" + line , file=fo)
             else:
-                print>>fo, "20190119" + "\t" + line
+                # print>>fo, "20190119" + "\t" + line
+                print("20190119" + "\t" + line , file=fo)
+
         else:
             last_user = user
             i = 0
             if i < user_count[user] - 2:
-                print>> fo, "20180118" + "\t" + line
+                # print>> fo, "20180118" + "\t" + line
+                print("20180118" + "\t" + line , file=fo)
             else:
-                print>>fo, "20190119" + "\t" + line
+                # print>>fo, "20190119" + "\t" + line
+                print("20190119" + "\t" + line , file=fo)
         i += 1
 
-process_meta(sys.argv[1])
-process_reviews(sys.argv[2])
+# process_meta(sys.argv[1])
+# process_reviews(sys.argv[2])
 manual_join()
 split_test()

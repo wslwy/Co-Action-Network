@@ -1,6 +1,7 @@
 import numpy
 import json
-import cPickle as pkl
+# import cPickle as pkl
+import _pickle as pkl
 import random
 
 import gzip

@@ -185,6 +185,7 @@ class Model(object):
             self.cross.append(self.coaction_sum)
 
     def build_fcn_net(self, inp, use_dice = False):
+        # 建立CAN最后的全连接层
         bn1 = tf.layers.batch_normalization(inputs=inp, name='bn1')
         dnn1 = tf.layers.dense(bn1, 200, activation=None, name='f1')
         if use_dice:
